@@ -1,0 +1,25 @@
+[
+    {
+        "username": "user",
+        "password": "password",
+        "secrets": [
+            "Я читаю гаррі поттера",
+            "я хлопець"
+        ]
+    },
+    {
+        "username": "Larko_0",
+        "password": "larko123",
+        "secrets": []
+    },
+    {
+        "username": "DimaLolKek",
+        "password": "dima123",
+        "secrets": []
+    },
+    {
+        "username": "Kokoko",
+        "password": "koko123",
+        "secrets": []
+    }
+]
