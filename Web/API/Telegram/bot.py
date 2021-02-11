@@ -48,6 +48,7 @@ class User:
     def __init__(self, chat_id, username):
         self.chat_id = chat_id
         self.username = username
+        self.next_message_handler = None
 
     def send_message_to_me(self, bot, text):
         bot.send_message(self.chat_id, text)
@@ -102,43 +103,66 @@ class Bot:
         user = find_user_by_chat_id(self.users, chat_id)
         if user is None:
             user = User(chat_id, f'Новачок {chat_id}')
+            user.next_message_handler = self.start_handler
             self.users.append(user)
         return user
 
     def answer_to_update(self, update, user):
-        """
-        /get_currency EUR   -> 34.213
-        """
         text = self.get_message_from_update(update)['text']
+        user.next_message_handler(user, text)
 
-        if not text[0] == '/':
-            self.send_message_to_user(user, 'Бот поки працює лише з командами')
-            return
+    def start_handler(self, user, text):
+        self.registration_menu(user)
 
-        line_list = text.split()
-        command = line_list[0]
+    def registration_menu(self, user):
+        self.send_message_to_user(user, 'Ласкаво просимо:)\n'
+                                        'Для початку введіть свій нікнейм.')
+        user.next_message_handler = self.registration_menu_handler
 
-        if command == '/get_currency':
-            if len(line_list) != 2:
-                self.send_message_to_user(user, 'Невірна кількість аргументів')
-                return
+    def registration_menu_handler(self, user, text):
+        user.username = text
+        self.send_message_to_user(user, 'Ви успішно зареєстровані!')
+        self.main_menu(user)
 
-            date = datetime.now().date()
-            price = get_exchange_rate(f'{date.day}.{date.month}.{date.year}', line_list[1])
-            if price is not False:
-                self.send_message_to_user(user, f'Ціна {line_list[1]} : {price}')
-            else:
-                self.send_message_to_user(user, 'Такої валюти не знайдено')
+    def main_menu(self, user):
+        text = '---= Головне меню =---\n' \
+               f'{user.username}\n' \
+               '1 - грати\n' \
+               '2 - магазин\n' \
+               '3 - аккаунт\n' \
+               '4 - начхати'
+        self.send_message_to_user(user, text)
+        user.next_message_handler = self.main_menu_handler
 
-        elif command == '/lol':
+    def main_menu_handler(self, user, text):
+        if text == '1':
             pass
-        elif command == '/start':
-            self.send_message_to_user(user, 'Привіт!')
-        else:
-            self.send_message_to_user(user, 'Такої команди немає')
+        elif text == '2':
+            pass
+        elif text == '3':
+            self.account_menu(user)
+        elif text == '4':
+            self.send_message_to_user(user, 'АПЧХІ')
 
-    def registration(self):
-        pass
+    def account_menu(self, user):
+        text = '--= Меню аккаунта =--\n' \
+               '1 - змінити нікнейм\n' \
+               '2 - видалити акаунт'
+        self.send_message_to_user(user, text)
+        user.next_message_handler = self.account_menu_handler
+
+    def account_menu_handler(self, user, text):
+        if text == '1':
+            self.send_message_to_user(user, 'Окей, введіть новий нікнейм: ')
+            user.next_message_handler = self.new_username_handler
+
+        elif text == '2':
+            pass
+
+    def new_username_handler(self, user, text):
+        user.username = text
+        self.send_message_to_user(user, 'Нікнейм оновлено!')
+        self.main_menu(user)
 
 
 bot = Bot()
