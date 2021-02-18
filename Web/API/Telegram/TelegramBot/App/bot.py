@@ -1,57 +1,9 @@
 import requests
-import json
 import time
 from typing import List, Optional
-from datetime import datetime
-
-TOKEN = '1572882836:AAGMXBmInazcfXSAIxfIqNwy0zrXF0aGxJY'
-BASE_URL = 'https://api.telegram.org'
-URL = f'{BASE_URL}/bot{TOKEN}'
-
-
-def print_struct(struct):
-    print(json.dumps(struct, indent=4))
-
-
-def find_user_by_chat_id(users, chat_id):
-    """
-    return:
-        User if founded
-        None if not
-    """
-    for user in users:
-        if user.chat_id == chat_id:
-            return user
-    return None
-
-
-def get_exchange_rate(date, currency_name):
-    """
-    return: int - ціна валюти, якщо все ок
-    False - якщо валюта не знайдена
-    """
-    response = requests.get(
-        f'https://api.privatbank.ua/p24api/exchange_rates?json&date={date}'
-    )  # Делаем запрос на API Приватбанка и получаем Response - ответ, кладем его в переменную response
-    dct = response.json()
-    currencies = dct['exchangeRate']
-
-    for currency_dict in currencies:
-        if 'currency' in currency_dict:
-            if currency_dict['currency'] == currency_name:
-                return currency_dict["saleRateNB"]
-
-    return False
-
-
-class User:
-    def __init__(self, chat_id, username):
-        self.chat_id = chat_id
-        self.username = username
-        self.next_message_handler = None
-
-    def send_message_to_me(self, bot, text):
-        bot.send_message(self.chat_id, text)
+from .globals import BASE_URL, TOKEN
+from .classes.user import User
+from .functions import find_user_by_chat_id
 
 
 class Bot:
@@ -80,7 +32,7 @@ class Bot:
                 user = self.identify_user(update)
                 self.answer_to_update(update, user)
                 self.last_update_id = update["update_id"]
-            time.sleep(0.5)
+            time.sleep(0.3)
 
     def get_message_from_update(self, update):
         if 'message' in update:
@@ -126,7 +78,7 @@ class Bot:
 
     def main_menu(self, user):
         text = '---= Головне меню =---\n' \
-               f'{user.username}\n' \
+               f'{user.username} ({user.status})\n' \
                '1 - грати\n' \
                '2 - магазин\n' \
                '3 - аккаунт\n' \
@@ -138,21 +90,53 @@ class Bot:
         if text == '1':
             pass
         elif text == '2':
-            pass
+            self.store_menu(user)
         elif text == '3':
             self.account_menu(user)
         elif text == '4':
             self.send_message_to_user(user, 'АПЧХІ')
 
+    def store_menu(self, user):
+        text = '--= Магазин =--\n' \
+               '0 - назад\n' \
+               '1 - статус бронза (10 монет)\n' \
+               '2 - статус золото (20 монет)\n' \
+               '3 - статус платина (30 монет)\n'
+        self.send_message_to_user(user, text)
+        user.next_message_handler = self.store_menu_handler
+
+    def store_menu_handler(self, user, text):
+        if text == '0':
+            self.main_menu(user)
+        elif text == '1':
+            if user.money >= 10:
+                user.money -= 10
+                user.status = 'бронза'
+                self.send_message_to_user(user, 'Статус змінено')
+                self.main_menu(user)
+            else:
+                self.send_message_to_user(user, 'Не вистачає коштів :(')
+                self.store_menu(user)
+        elif text == '2':
+            pass
+        elif text == '3':
+            pass
+        else:
+            pass
+
     def account_menu(self, user):
         text = '--= Меню аккаунта =--\n' \
+               '0 - назад\n' \
                '1 - змінити нікнейм\n' \
                '2 - видалити акаунт'
         self.send_message_to_user(user, text)
         user.next_message_handler = self.account_menu_handler
 
     def account_menu_handler(self, user, text):
-        if text == '1':
+        if text == '0':
+            self.main_menu(user)
+
+        elif text == '1':
             self.send_message_to_user(user, 'Окей, введіть новий нікнейм: ')
             user.next_message_handler = self.new_username_handler
 
@@ -164,6 +148,3 @@ class Bot:
         self.send_message_to_user(user, 'Нікнейм оновлено!')
         self.main_menu(user)
 
-
-bot = Bot()
-bot.run()
