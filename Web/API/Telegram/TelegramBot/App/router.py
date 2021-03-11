@@ -31,13 +31,31 @@ class Router:
 
     def main_menu_handler(self, user, text):
         if text == '1':
-            pass
+            self.game_menu(user)
         elif text == '2':
             self.store_menu(user)
         elif text == '3':
             self.account_menu(user)
         elif text == '4':
             self.bot.send_message_to_user(user, 'АПЧХІ')
+
+    def game_menu(self, user):
+        text = '---= Гра =---\n' \
+               '0 - назад\n' \
+               '1 - створити власне лоббі\n' \
+               '2 - пошук лоббі'
+        self.bot.send_message_to_user(user, text)
+        user.next_message_handler = self.game_menu_handler
+
+    def game_menu_handler(self, user, text):
+        if text == '2':
+            self.lobbies_menu(user)
+
+    def lobbies_menu(self, user):
+        text = '---= Доступні лоббі: =---\n'
+        for lobby in self.bot.lobbies:
+            text += f"{lobby.id} - {lobby.name}\n"
+        self.bot.send_message_to_user(user, text)
 
     def store_menu(self, user):
         text = '--= Магазин =--\n' \

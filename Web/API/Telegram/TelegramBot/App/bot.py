@@ -5,6 +5,7 @@ from .globals import BASE_URL, TOKEN
 from .classes.user import User
 from .functions import find_user_by_chat_id
 from .router import Router
+from .classes.lobby import Lobby
 
 
 class Bot:
@@ -12,8 +13,13 @@ class Bot:
         self.token = token
         self.url = f'{BASE_URL}/bot{token}'
         self.last_update_id: int = 0
-        self.users: List[User] = []
         self.router = Router(self)
+
+        self.users: List[User] = []
+        self.lobbies = [
+            Lobby(1, 'Base lobby UA', []),
+            Lobby(2, 'Dop lobby UA', [])
+        ]
 
     def get_updates(self):
         response = requests.get(f'{self.url}/getUpdates?offset={self.last_update_id + 1}')
