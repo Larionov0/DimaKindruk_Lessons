@@ -1,3 +1,6 @@
+from .functions import create_keyboard, find_lobby_by_id
+
+
 class Router:
     def __init__(self, bot):
         self.bot = bot
@@ -21,41 +24,53 @@ class Router:
 
     def main_menu(self, user):
         text = '---= Головне меню =---\n' \
-               f'{user.username} ({user.status})\n' \
-               '1 - грати\n' \
-               '2 - магазин\n' \
-               '3 - аккаунт\n' \
-               '4 - начхати'
-        self.bot.send_message_to_user(user, text)
+               f'{user.username} ({user.status})'
+        keyboard = create_keyboard([
+            ['Грати', "Магазин"],
+            ["Аккаунт", "Начхати"]
+        ])
+        self.bot.send_message_to_user(user, text, keyboard)
         user.next_message_handler = self.main_menu_handler
 
     def main_menu_handler(self, user, text):
-        if text == '1':
+        if text == 'Грати':
             self.game_menu(user)
-        elif text == '2':
+        elif text == 'Магазин':
             self.store_menu(user)
-        elif text == '3':
+        elif text == 'Аккаунт':
             self.account_menu(user)
-        elif text == '4':
+        elif text == 'Начхати':
             self.bot.send_message_to_user(user, 'АПЧХІ')
 
     def game_menu(self, user):
-        text = '---= Гра =---\n' \
-               '0 - назад\n' \
-               '1 - створити власне лоббі\n' \
-               '2 - пошук лоббі'
-        self.bot.send_message_to_user(user, text)
+        text = '---= Гра =---\n'
+        keyboard = create_keyboard([
+            ['Створити лоббі', 'Пошук лоббі'],
+            ['Назад']
+        ])
+        self.bot.send_message_to_user(user, text, keyboard)
         user.next_message_handler = self.game_menu_handler
 
     def game_menu_handler(self, user, text):
-        if text == '2':
+        if text == 'Пошук лоббі':
             self.lobbies_menu(user)
+        elif text == 'Назад':
+            self.main_menu(user)
 
     def lobbies_menu(self, user):
         text = '---= Доступні лоббі: =---\n'
+        text += '0 - назад\n'
         for lobby in self.bot.lobbies:
             text += f"{lobby.id} - {lobby.name}\n"
         self.bot.send_message_to_user(user, text)
+        user.next_message_handler = self.lobbies_menu_handler
+
+    def lobbies_menu_handler(self, user, text):
+        lobby = find_lobby_by_id(self.bot.lobbies, int(text))
+        if lobby:
+            self.bot.send_message_to_user(user, 'Користувач доданий в лоббі')
+        else:
+            self.bot.send_message_to_user(user, 'Такого лоббі немає')
 
     def store_menu(self, user):
         text = '--= Магазин =--\n' \
