@@ -61,7 +61,7 @@ class Router:
         text = '---= Доступні лоббі: =---\n'
         text += '0 - назад\n'
         for lobby in self.bot.lobbies:
-            text += f"{lobby.id} - {lobby.name}\n"
+            text += f"{lobby}\n"
         self.bot.send_message_to_user(user, text)
         user.next_message_handler = self.lobbies_menu_handler
 
@@ -69,6 +69,7 @@ class Router:
         lobby = find_lobby_by_id(self.bot.lobbies, int(text))
         if lobby:
             self.bot.send_message_to_user(user, 'Користувач доданий в лоббі')
+            lobby.add_player(user)
         else:
             self.bot.send_message_to_user(user, 'Такого лоббі немає')
 

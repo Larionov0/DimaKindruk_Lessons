@@ -17,8 +17,8 @@ class Bot:
 
         self.users: List[User] = []
         self.lobbies = [
-            Lobby(1, 'Base lobby UA', []),
-            Lobby(2, 'Dop lobby UA', [])
+            Lobby(self, 1, 'Base lobby UA', [], players_needed=4),
+            Lobby(self, 2, 'Dop lobby UA', [])
         ]
 
     def get_updates(self):
@@ -43,10 +43,12 @@ class Bot:
         print('Start')
         while True:
             updates = self.get_updates()
+
             for update in updates:
-                user = self.identify_user(update)
-                self.router.answer_to_update(update, user)
-                self.last_update_id = update["update_id"]
+                if 'message' in update and 'text' in update['message']:
+                    user = self.identify_user(update)
+                    self.router.answer_to_update(update, user)
+                    self.last_update_id = update["update_id"]
             time.sleep(0.3)
 
     def get_message_from_update(self, update):

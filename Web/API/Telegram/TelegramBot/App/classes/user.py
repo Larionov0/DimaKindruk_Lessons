@@ -8,3 +8,6 @@ class User:
 
     def send_message_to_me(self, bot, text):
         bot.send_message(self.chat_id, text)
+
+    def __str__(self):
+        return f"[-_- {self.username}]"
