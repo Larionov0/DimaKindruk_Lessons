@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySocSet</title>
+</head>
+<style>
+    body {
+        background-color: rgb(248, 244, 244);
+    }
+
+    div.who > img {
+        width: 50px;
+        height: 50px;
+        border-radius: 15px;
+        border: 2px solid rgb(144, 233, 240);
+        margin-right: 10px;
+    }
+
+    div.who h3 {
+        font-size: 20pt;
+        margin: 12px;
+        color: rgb(180, 88, 88);
+    }
+
+    div.who {
+        display: flex;
+        background-color: rgb(166, 241, 200);
+        border-radius: 10px;
+    }
+
+    div.message {
+        border: 1px solid black;
+        border-radius: 10px;
+        margin: 20px 200px 5px 200px;
+        padding: 10px;
+        background-color: rgb(234, 246, 247);
+    }
+
+    
+
+    .content {
+        display: flex;
+    }
+
+    .navbar {
+        width: 20%;
+        background-color: rgb(226, 241, 241);
+        padding: 3px;
+        height: 700px;
+    }
+
+    .message_place {
+        width: 80%;
+    }
+    .header {
+        height: 50px;
+        background-color: blanchedalmond;
+        border-radius: 2px;
+    }
+
+    .nav_link {
+        border: 2px solid rgb(255, 255, 255);
+        border-radius: 5px;
+        margin-bottom: 3px;
+        background-color: rgb(213, 228, 228);
+    }
+
+</style>
+<body>
+    <div class="header big">
+        Header
+    </div>
+    <div class="content big">
+        <div class="navbar big">
+            <div class="nav_link"><h3>На головну</h4></div>
+            <div class="nav_link"><h3>Повідомлення</h4></div>
+            <div class="nav_link"><h3>Моя сторінка</h4></div>
+        </div>
+        <div class="message_place big">
+            <div class="message">
+                <div class="who">
+                    <img src="https://memepedia.ru/wp-content/uploads/2018/09/terebonka-360x270.jpg"><h3>Bob</h3>
+                </div>
+                <p class="message_text">Всем привет гайсы!</p>
+            </div>
+            <div class="message">
+                <div class="who">
+                    <img src="https://i.pinimg.com/originals/78/dc/bd/78dcbd823ef3aaf8d031ce0947198871.jpg"><h3>Vasya</h3>
+                </div>
+                <p class="message_text">Что здесь происходит?</p>
+            </div>
+            <div class="message">
+                <div class="who">
+                    <img src="https://memegenerator.net/img/images/4742169.jpg"><h3>Lesha</h3>
+                </div>
+                <p class="message_text">Кто со мной в амнгус?</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
