@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caclulator</title>
+</head>
+<style>
+    textarea {
+        resize: none;
+        width: 300px;
+    }
+</style>
+<script>
+    function calculate(){
+        var t1 = document.getElementById('input1')
+        var t2 = document.getElementById('input2')
+        
+        var num1 = parseFloat(t1.value)
+        var num2 = parseFloat(t2.value)
+        
+        var result = num1 + num2
+        if (isNaN(result)){
+            alert('Вводьте числа, будь ласка :)')
+        }
+        document.getElementById('result').innerHTML = result
+    }
+
+    function change_page_color(color){
+        var body = document.getElementsByTagName('body')[0]
+        body.style["background-color"] = color
+    }
+</script>
+<body>
+    <input type="number" id='input1' placeholder="Число 1"></textarea> <br>
+    <input type="number" id='input2' placeholder="Число 2"></textarea> <br>
+    <button onclick="calculate()">Порахувати</button>
+    <p>Результат:</p><p id='result'></p>
+    <br>
+    <button onclick="change_page_color('yellow')">Жовтий</button>
+    <button onclick="change_page_color('white')">Білий</button>
+    <button onclick="change_page_color('rgba(0, 255, 0, 0.3)')">Зелений</button>
+</body>
+</html>
