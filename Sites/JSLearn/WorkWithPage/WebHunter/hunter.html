@@ -22,13 +22,66 @@
         margin: 1px;
     }
 
+    #page {
+        display: flex;
+    }
+
+    #interface_panel {
+        background-color: rgb(189, 189, 214);
+        width: 200px;
+        padding: 10px;
+    }
+
 </style>
 <body>
-    <div id="field_place">
+    <div id='page'>
+        <div id="field_place">
 
+        </div>
+        <div id='interface_panel'>
+            <h3 id='name'></h3>
+            <p id='details'></p>
+        </div>
     </div>
 </body>
 <script>
+    Array.prototype.random_choice = function(){
+        return this[Math.floor(Math.random()*this.length)];
+    }
+    Array.prototype.remove = function(value){
+        for( var i = 0; i < this.length; i++){
+            if ( this[i] === value) { 
+                this.splice(i, 1); 
+                break
+            }
+        }
+    }
+
+    Array.prototype.equals = function (array) {
+        // if the other array is a falsy value, return
+        if (!array)
+            return false;
+
+        // compare lengths - can save a lot of time 
+        if (this.length != array.length)
+            return false;
+
+        for (var i = 0, l=this.length; i < l; i++) {
+            // Check if we have nested arrays
+            if (this[i] instanceof Array && array[i] instanceof Array) {
+                // recurse into the nested arrays
+                if (!this[i].equals(array[i]))
+                    return false;       
+            }           
+            else if (this[i] != array[i]) { 
+                // Warning - two different object instances will never be equal: {x:20} != {x:20}
+                return false;   
+            }           
+        }       
+        return true;
+    }
+
+
     var N = 12
     var M = 20
     // var grass_img_src = 'https://images.freeimages.com/images/large-previews/7ef/grass-texture-1166117.jpg'
@@ -63,6 +116,11 @@
         field.innerHTML = field_html
     }
 
+    function draw_interface(player){
+        document.getElementById('name').innerHTML = player.name
+        document.getElementById('details').innerHTML = 'Деталі: ' + player.details
+    }
+
     function draw_matrix(matrix){
         var field = document.getElementById('field_place')
 
@@ -91,25 +149,72 @@
 
         move (direction){
             if (direction == 'w'){
-                this.coords[0] -= 1
+                if (this.coords[0] != 0) {
+                    this.coords[0] -= 1
+                }
             }
             else if (direction == 'a'){
-                this.coords[1] -= 1
+                if (this.coords[1] == 0){
+                    this.coords[1] = M - 1
+                } else {
+                    this.coords[1] -= 1
+                }
             }
             else if (direction == 's'){
-                this.coords[0] += 1
+                if (this.coords[0] != N - 1){
+                    this.coords[0] += 1
+                }
             }
             else if (direction == 'd') {
-                this.coords[1] += 1
+                if (this.coords[1] == M - 1){
+                    this.coords[1] = 0
+                } else{
+                    this.coords[1] += 1
+                }
             }
         }
     } 
 
+
+    class Animal extends GameObject {
+        make_move(){}
+    }
+
+
+    class Kurka extends Animal {
+        constructor (name, coords, hp=3){
+            var sprite_src1 = 'https://i.pinimg.com/originals/f8/5a/63/f85a63eacb12bf7f4d73efaa2c81beaf.gif'
+            var sprite_src2 = 'https://csgocock.com/static/img/chicken/ChickenRun1.gif'
+            super(coords, sprite_src2)
+            this.name = name
+            this.hp = this.max_hp = hp
+        }
+
+        make_move(){
+            var dir = ['w', 'a', 's', 'd'].random_choice()
+            this.move(dir)
+        }
+    }
+
+
     class Player extends GameObject {
-        constructor(name, coords, hp, sprite_src){
+        constructor(name, coords, hp, sprite_src, details=0){
             super(coords, sprite_src)
             this.name = name
             this.hp = hp
+            this.details = details
+        }
+
+        check_if_kurka_caughted(animals){
+            for (var animal of animals){
+                if (animal instanceof Kurka){
+                    if (animal.coords.equals(this.coords)){
+                        animals.remove(animal)
+                        this.details += 3
+                        break
+                    }
+                }
+            }
         }
     }
 
@@ -123,13 +228,28 @@
     }
     
     function one_round(player){
+        player.check_if_kurka_caughted(animals)
+        for (animal of animals){
+            animal.make_move()
+        }
+        player.check_if_kurka_caughted(animals)
+
         var matrix = create_matrix()
         player.draw(matrix)
+        for (animal of animals){
+            animal.draw(matrix)
+        }
         draw_matrix(matrix)
+        draw_interface(player)
         document.addEventListener('keydown', on_key_down)
     }
 
     var player = new Player('Bob', [1, 5], 10, 'https://graphicriver.img.customer.envatousercontent.com/files/253361666/Envato_590x700.jpg?auto=compress%2Cformat&q=80&fit=crop&crop=top&max-h=8000&max-w=590&s=e760737bff08c6cf5a95c30bcffe87c1')
+    var animals = [
+        new Kurka('Ryaba', [1, 1]),
+        new Kurka('Biba', [4, 6]),
+        new Kurka('Marusya', [1, 2])
+    ]
     one_round(player)
 
 </script>
