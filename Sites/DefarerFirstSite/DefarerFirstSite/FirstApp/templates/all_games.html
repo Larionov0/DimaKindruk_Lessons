@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ my_title }}</title>
+</head>
+<body>
+    <ul>
+        {% for game in games %}
+            {% if game.min_age >= min_age %}
+                <li>{{ game }}</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</body>
+</html>
